@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 
 void main() => runApp(MyApp());
 
@@ -328,6 +329,49 @@ Lake Oeschinen lies at the foot of the Blüemlisalp in the Bernese Alps. Situate
           onTap: () {})
     ];
 
+    var card1 = new SizedBox(
+      height: 510.0,
+      child: new Card(
+        elevation: 5,
+        child: new Column(
+          children: <Widget>[
+            new ListTile(
+              title: new Text(
+                '1625 Main Street',
+                style: new TextStyle(fontWeight: FontWeight.w500),
+              ),
+              subtitle: new Text('My City, CA 9999'),
+              leading: new Icon(Icons.restaurant, color: Colors.blue),
+            ),
+            new Divider(),
+            new ListTile(
+              title: new Text(
+                '555-1212',
+                style: new TextStyle(fontWeight: FontWeight.w500),
+              ),
+              leading: new Icon(Icons.contact_phone, color: Colors.blue),
+            ),
+            new ListTile(
+              title: new Text(
+                  'person@example.comleading person@example.comleading person@example.comleading person@example.comleading person@example.comleading person@example.comleading'),
+              leading: new Icon(Icons.contact_mail, color: Colors.blue),
+            ),
+          ],
+        ),
+      ),
+    );
+
+    var stack = new Stack(
+      alignment: Alignment(0.6, 0.6),
+      children: <Widget>[
+        new CircleAvatar(
+          backgroundImage: new AssetImage('images/lake.png'),
+          radius: 160.0,
+        ),
+        new Text('data')
+      ],
+    );
+
     return new MaterialApp(
       title: 'Flutter Demo',
       theme: new ThemeData(
@@ -341,16 +385,192 @@ Lake Oeschinen lies at the foot of the Blüemlisalp in the Bernese Alps. Situate
               //     child: new ListView(
               //   children: list,
               // )
-              child: new Stack(
-            alignment: Alignment(0.6, 0.6),
-            children: <Widget>[
-              new CircleAvatar(
-                backgroundImage: new AssetImage('images/lake.png'),
-                radius: 160.0,
-              ),
-              new Text('data')
-            ],
-          ))),
+              padding: new EdgeInsets.fromLTRB(0, 100, 0, 0),
+              child: new ParentWidget())),
     );
+  }
+}
+
+class FavoriteWidget extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() {
+    return new _FavoriteStateWidget();
+  }
+}
+
+class _FavoriteStateWidget extends State<FavoriteWidget> {
+  bool _isFavorite = true;
+  int _favoriteCount = 41;
+
+  void _toggleFavoriteButton() {
+    setState(() {
+      if (_isFavorite) {
+        _favoriteCount--;
+        _isFavorite = false;
+      } else {
+        _favoriteCount++;
+        _isFavorite = true;
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // TODO: implement build
+    return new Row(children: [
+      new Container(
+        child: new IconButton(
+            icon: new Icon(_isFavorite ? Icons.star : Icons.star_border),
+            onPressed: _toggleFavoriteButton,
+            color: Colors.red),
+      ),
+      new SizedBox(
+          width: 25, child: new Container(child: new Text('$_favoriteCount')))
+    ]);
+  }
+}
+
+class TapBoxA extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() => new _TapBoxAState();
+}
+
+class _TapBoxAState extends State<StatefulWidget> {
+  bool _isActive = false;
+
+  void handleTap() {
+    setState(() {
+      _isActive = !_isActive;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // TODO: implement build
+    return new GestureDetector(
+      onTap: handleTap,
+      child: new Center(
+        child: new Container(
+            child: new Center(
+                child: new Text(_isActive ? 'Active' : 'Inactive',
+                    style: new TextStyle(fontSize: 24, color: Colors.white))),
+            width: 100,
+            height: 100,
+            decoration: new BoxDecoration(
+                color: _isActive ? Colors.green : Colors.grey)),
+      ),
+    );
+  }
+}
+
+class ParentWidget extends StatefulWidget {
+  @override
+  _ParentWidgetState createState() => new _ParentWidgetState();
+}
+
+class _ParentWidgetState extends State<ParentWidget> {
+  bool _active = false;
+
+  void _handleTap(bool active) {
+    setState(() {
+      _active = !active;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return new Container(
+      child: new TapBoxC(
+        active: _active,
+        onChanged: _handleTap,
+      ),
+    );
+  }
+}
+
+class TapBoxB extends StatelessWidget {
+  TapBoxB({Key key, this.active: false, @required this.onChanged})
+      : super(key: key);
+
+  final bool active;
+  final ValueChanged<bool> onChanged;
+
+  void _handleTap() {
+    onChanged(active);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return new GestureDetector(
+      onTap: _handleTap,
+      child: new Container(
+        child: new Center(
+          child: new Text(active ? 'Active' : 'Inactive',
+              style: new TextStyle(fontSize: 24, color: Colors.white)),
+        ),
+        width: 100,
+        height: 100,
+        decoration:
+            new BoxDecoration(color: active ? Colors.green : Colors.grey),
+      ),
+    );
+  }
+}
+
+class TapBoxC extends StatefulWidget {
+  TapBoxC({Key key, this.active: false, @required this.onChanged})
+      : super(key: key);
+  final bool active;
+  final ValueChanged<bool> onChanged;
+
+  @override
+  TapBoxCState createState() => new TapBoxCState();
+}
+
+class TapBoxCState extends State<TapBoxC> {
+  bool _hilighted = false;
+
+  void _handleTap() {
+    widget.onChanged(widget.active);
+  }
+
+  void _handleTapDown(TapDownDetails details) {
+    setState(() {
+      _hilighted = true;
+    });
+  }
+
+  void _handleTapUp(TapUpDetails details) {
+    setState(() {
+      _hilighted = false;
+    });
+  }
+
+  void _handleTapCancel() {
+    setState(() {
+      _hilighted = false;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return new GestureDetector(
+        onTap: _handleTap,
+        onTapDown: _handleTapDown,
+        onTapUp: _handleTapUp,
+        onTapCancel: _handleTapCancel,
+        child: new Container(
+          child: new Center(
+              child: new Text(
+            widget.active ? 'Active' : 'Inactive',
+            style: new TextStyle(fontSize: 24, color: Colors.white),
+          )),
+          width: 100,
+          height: 100,
+          decoration: new BoxDecoration(
+              border:
+                  new Border.all(color: _hilighted ? Colors.red : Colors.black),
+              color: widget.active ? Colors.green : Colors.grey),
+        ));
   }
 }
